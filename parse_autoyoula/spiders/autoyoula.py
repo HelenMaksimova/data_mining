@@ -79,16 +79,16 @@ class AutoyoulaSpider(scrapy.Spider):
 
     @staticmethod
     def images_parse(response):
-        # На странице отображается только 6 картинок, в то время как их на самом деле может быть гораздо больше.
+        # На странице отображается только 7 картинок, в то время как их на самом деле может быть гораздо больше.
         # Нашла ссылки на все картинки в одном из скриптов на странице, поэтому парсила из скриптов.
         scripts_list = response.css('script::text').getall()
         pattern_image = r'automobile_m3%2F(document)%2F(.*?)%2F(.*?)%2F(.*?)%2F(.*?\.jpg)'
         for script in scripts_list:
             temp_images = re.findall(pattern_image, script)
             if temp_images:
-                links_images = [urljoin('https://static.am/automobile_m3/', '/'.join(link))
-                                for link in temp_images
-                                if 'l' in link]
+                links_images = list({urljoin('https://static.am/automobile_m3/', '/'.join(link))
+                                     for link in temp_images
+                                     if 'l' in link})
                 return links_images
 
     def save_data(self, data):
